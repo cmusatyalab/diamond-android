@@ -1,0 +1,5 @@
+bin
+*.log
+local.properties
+res/raw
+gen
