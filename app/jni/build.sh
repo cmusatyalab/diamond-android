@@ -117,7 +117,7 @@ if [[ ! -d diamond-core-filters ]]; then
   git clone https://github.com/cmusatyalab/diamond-core-filters.git
 fi
 cd diamond-core-filters
-git checkout 9c0b6b18a8d1323a2daea2e4bef7a63b78bddb3d
+git checkout 15e63cf2797e674553a0a5cfbfd82f31c535a95b
 cd lib
 cp ../../build-modifications/diamond-core-filters/lib/* .
 ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk \
@@ -126,14 +126,6 @@ cd ../..
 
 cd diamond-core-filters/filters
 cp ../../build-modifications/diamond-core-filters/filters/base.mk .
-cd img_diff
-mv fil_img_diff.c{,.old}
-echo "#define MIN(a,b) ((a) < (b) ? a : b)" > fil_img_diff.c
-cat fil_img_diff.c.old >> fil_img_diff.c
-cd ..
-cd num_attr
-sed -i -e 's/#include <regex\.h>//' fil_num_attr.c
-cd ..
 cd text_attr
 sed -i -e 's/#include <regex\.h>/#include "_regex.h"/' fil_text_attr.c
 cd ..
