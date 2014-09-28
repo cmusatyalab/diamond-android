@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 
 public class Filter {
@@ -21,7 +22,7 @@ public class Filter {
     private OutputStream os;
 
     public Filter(FilterEnum type, Context context, String name, String[] args, byte[] blob) throws IOException {
-        File f = context.getFileStreamPath(getResourceName(type));
+        File f = context.getFileStreamPath(context.getResources().getResourceEntryName(type.id));
         try {
             Runtime RT = Runtime.getRuntime();
             proc = RT.exec(f.getAbsolutePath());
@@ -38,19 +39,19 @@ public class Filter {
     }
 
     public static void loadFilters(Context context) {
+        Resources r = context.getResources();
         for (FilterEnum f : FilterEnum.values()) {
-            InputStream ins = context.getResources().openRawResource(getResourceId(f));
+            InputStream ins = r.openRawResource(f.id);
+            String name = r.getResourceEntryName(f.id);
             byte[] buffer;
             try {
                 buffer = new byte[ins.available()];
                 ins.read(buffer);
                 ins.close();
-                FileOutputStream fos = context.openFileOutput(
-                    getResourceName(f), Context.MODE_PRIVATE
-                );
+                FileOutputStream fos = context.openFileOutput(name, Context.MODE_PRIVATE);
                 fos.write(buffer);
                 fos.close();
-                context.getFileStreamPath(getResourceName(f)).setExecutable(true);
+                context.getFileStreamPath(name).setExecutable(true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -104,39 +105,5 @@ public class Filter {
     public void dumpStdoutAndStderr() throws IOException {
         Log.d(TAG, "stdout: " + IOUtils.toString(proc.getInputStream()));
         Log.d(TAG, "stderr: " + IOUtils.toString(proc.getErrorStream()));
-    }
-    
-    private static String getResourceName(FilterEnum f) {
-        switch (f) {
-            case DOG_TEXTURE: return "dog_texture";
-            case GABOR_TEXTURE: return "gabor_texture";
-            case IMG_DIFF: return "img_diff";
-            case NULL_FILTER: return "null_filter";
-            case NUM_ATTR: return "num_attr";
-            case OCV_FACE: return "ocv_face";
-            case RGB_HISTOGRAM: return "rgb_histogram";
-            case RGBIMG: return "rgbimg";
-            case SHINGLING: return "shingling";
-            case TEXT_ATTR: return "text_attr";
-            case THUMBNAILER: return "thumbnailer";
-            default: throw new RuntimeException("Could not find filter resource.");
-        }
-    }
-
-    private static int getResourceId(FilterEnum f) {
-        switch (f) {
-            case DOG_TEXTURE: return R.raw.dog_texture;
-            case GABOR_TEXTURE: return R.raw.gabor_texture;
-            case IMG_DIFF: return R.raw.img_diff;
-            case NULL_FILTER: return R.raw.null_filter;
-            case NUM_ATTR: return R.raw.num_attr;
-            case OCV_FACE: return R.raw.ocv_face;
-            case RGB_HISTOGRAM: return R.raw.rgb_histogram;
-            case RGBIMG: return R.raw.rgbimg;
-            case SHINGLING: return R.raw.shingling;
-            case TEXT_ATTR: return R.raw.text_attr;
-            case THUMBNAILER: return R.raw.thumbnailer;
-            default: throw new RuntimeException("Could not find filter resource.");
-        }
     }
 }
