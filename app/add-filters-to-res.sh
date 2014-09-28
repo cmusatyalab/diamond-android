@@ -30,4 +30,4 @@ addFilter text_attr
 addFilter thumbnailer
 
 echo "ocv_face.xml"
-cp $PWD/jni/diamond-core-filters/predicates/ocv_face.xml $RES_DIR
+cp $PWD/jni/diamond-core-filters/predicates/ocv_face.xml $RES_DIR/ocv_face_xml
