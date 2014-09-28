@@ -101,9 +101,9 @@ public class Filter {
         return Integer.parseInt(readString());
     }
     
-    public void dumpStderrLine() throws IOException {
-            Log.d(TAG, "Err: " + new BufferedReader(
-                new InputStreamReader(proc.getErrorStream())).readLine());
+    public void dumpStdoutAndStderr() throws IOException {
+        Log.d(TAG, "stdout: " + IOUtils.toString(proc.getInputStream()));
+        Log.d(TAG, "stderr: " + IOUtils.toString(proc.getErrorStream()));
     }
     
     private static String getResourceName(FilterEnum f) {
