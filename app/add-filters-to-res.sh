@@ -14,7 +14,6 @@ addFilter() {
   cp $FULL_PATH $RES_DIR
 }
 
-rm -rf $RES_DIR
 mkdir -p $RES_DIR
 
 addFilter dog_texture
