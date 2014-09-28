@@ -6,7 +6,7 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 
 import edu.cmu.cs.diamond.android.token.*;
-import edu.cmu.cs.diamond.diamonddraid.R;
+import edu.cmu.cs.diamond.android.R;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -27,8 +27,8 @@ public class MainActivity extends Activity {
             Filter.loadFilters(context);
             byte[] me = loadImageFromRes(R.raw.me);
             isFace(me);
-//            char[] notFace = loadImageFromRes(R.raw.not_face);
-            //isFace(notFace);
+            byte[] notFace = loadImageFromRes(R.raw.not_face);
+            isFace(notFace);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -47,6 +47,8 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Sending JPEG image to RGB filter.");
         Log.d(TAG, "JPEG image size: " + String.valueOf(jpegImage.length) + " bytes.");
         rgbFilter.sendBinary(jpegImage);
+
+        Log.d(TAG, "Receiving RGB output buffer.");
         byte[] rgbImage = null;
         while (rgbImage == null) {
             Token t = rgbFilter.getNextToken();
@@ -71,6 +73,15 @@ public class MainActivity extends Activity {
 
         Log.d(TAG, "Sending RGB image to OCV face filter.");
         faceFilter.sendBinary(rgbImage);
+        boolean foundResult = false;
+        while (!foundResult) {
+            Token t = faceFilter.getNextToken();
+            if (t.tag == TagEnum.RESULT) {
+                ResultToken rt = (ResultToken) t;
+                Log.d(TAG, "Result: " + String.valueOf(rt.var));
+                foundResult = true;
+            }
+        }
         
         rgbFilter.destroy();
         faceFilter.destroy();

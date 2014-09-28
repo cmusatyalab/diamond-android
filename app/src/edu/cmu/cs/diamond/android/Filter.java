@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -28,23 +27,19 @@ public class Filter {
 
     public Filter(FilterEnum type, Context context, String name, String[] args, byte[] blob) throws IOException {
         File f = context.getFileStreamPath(context.getResources().getResourceEntryName(type.id));
-        try {
-            ProcessBuilder pb = new ProcessBuilder(f.getAbsolutePath());
-            Map<String,String> env = pb.environment();
-            tempDir = File.createTempFile("filter", null, context.getCacheDir());
-            tempDir.delete(); // Delete file and create directory.
-            if (!tempDir.mkdir()) {
-                throw new IOException("Unable to create temporary directory.");
-            }
-            env.put("TEMP", tempDir.getAbsolutePath());
-            env.put("TMPDIR", tempDir.getAbsolutePath());
-            proc = pb.start();
-            is = proc.getInputStream();
-            os = proc.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
+        ProcessBuilder pb = new ProcessBuilder(f.getAbsolutePath());
+        Map<String,String> env = pb.environment();
+        tempDir = File.createTempFile("filter", null, context.getCacheDir());
+        tempDir.delete(); // Delete file and create directory.
+        if (!tempDir.mkdir()) {
+            throw new IOException("Unable to create temporary directory.");
         }
-        
+        env.put("TEMP", tempDir.getAbsolutePath());
+        env.put("TMPDIR", tempDir.getAbsolutePath());
+        proc = pb.start();
+        is = proc.getInputStream();
+        os = proc.getOutputStream();
+
         sendInt(1);
         sendString(name);
         sendStringArray(args);
@@ -82,6 +77,7 @@ public class Filter {
         IOUtils.write(Integer.toString(s.length()), os);
         sendBlank();
         IOUtils.write(s, os);
+        sendBlank();
         os.flush();
     }
     
@@ -96,21 +92,15 @@ public class Filter {
     public void sendDouble(double d) throws IOException { sendString(Double.toString(d)); }
 
     public void sendBinary(byte[] b) throws IOException {
-        if (b == null) IOUtils.write("0", os);
-        else IOUtils.write(Integer.toString(b.length), os);
+        if (b == null) {
+            IOUtils.write("0", os);
+        }
+        else {
+            IOUtils.write(Integer.toString(b.length), os);
+        }
         sendBlank();
         if (b != null) {
             os.write(b);
-//            int chunkSize = 256000, sentBytes = 0, i = 0;
-//            while (sentBytes < b.length) {
-//                Log.d(TAG, "Writing chunk " + i);
-//                int end = sentBytes+chunkSize > b.length ?
-//                    b.length : i*chunkSize+chunkSize;
-//                byte[] buf = Arrays.copyOfRange(b,i*chunkSize,end);
-//                os.write(buf, 0, end-i*chunkSize);
-//                sentBytes += chunkSize; i++;
-//                os.flush();
-//            }
         }
         sendBlank();
     }
@@ -138,6 +128,9 @@ public class Filter {
         return new String(buf);
     }
 
+    public double readDouble() throws NumberFormatException, IOException {
+        return Double.parseDouble(readString());
+    }
     public int readInt() throws NumberFormatException, IOException {
         return Integer.parseInt(readString());
     }
@@ -161,16 +154,20 @@ public class Filter {
             case LOG:
                 int logLevel = readInt();
                 String msg = readString();
+                Log.d(TAG, "  msg: " + msg);
                 return new LogToken(logLevel, msg);
             case GET:
                 String getVar = readString();
+                Log.d(TAG, "  var: " + getVar);
                 return new GetToken(getVar);
             case SET:
                 String setVar = readString();
+                Log.d(TAG, "  set: " + setVar);
                 byte[] buf = readByteArray();
-                Log.d(TAG, "  + var: "+setVar);
-                Log.d(TAG, "  + buf: "+new String(buf));
                 return new SetToken(setVar, buf);
+            case RESULT:
+                double resVar = readDouble();
+                return new ResultToken(resVar);
             default:
                 return new Token(tag);
         }
