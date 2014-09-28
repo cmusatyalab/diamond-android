@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -93,14 +94,27 @@ public class Filter {
     
     public void sendInt(int i) throws IOException { sendString(Integer.toString(i)); }
     public void sendDouble(double d) throws IOException { sendString(Double.toString(d)); }
-    
+
     public void sendBinary(byte[] b) throws IOException {
         if (b == null) IOUtils.write("0", os);
         else IOUtils.write(Integer.toString(b.length), os);
         sendBlank();
-        if (b != null) IOUtils.write(b, os);
+        if (b != null) {
+            os.write(b);
+//            int chunkSize = 256000, sentBytes = 0, i = 0;
+//            while (sentBytes < b.length) {
+//                Log.d(TAG, "Writing chunk " + i);
+//                int end = sentBytes+chunkSize > b.length ?
+//                    b.length : i*chunkSize+chunkSize;
+//                byte[] buf = Arrays.copyOfRange(b,i*chunkSize,end);
+//                os.write(buf, 0, end-i*chunkSize);
+//                sentBytes += chunkSize; i++;
+//                os.flush();
+//            }
+        }
         sendBlank();
     }
+
 
     private String readLine() throws IOException {
         StringBuilder buf = new StringBuilder();
@@ -161,9 +175,6 @@ public class Filter {
                 return new Token(tag);
         }
     }
-    
-    private String logStr;
-    public String getOutputToken() { return logStr; }
 
     public void dumpStdoutAndStderr() throws IOException {
         new Thread(new Runnable() {
@@ -187,6 +198,5 @@ public class Filter {
                 } catch (IOException e) { e.printStackTrace(); }
             }
         }).start();
-    }
-    
+    }    
 }

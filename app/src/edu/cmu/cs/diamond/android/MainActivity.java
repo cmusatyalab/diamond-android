@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import edu.cmu.cs.diamond.android.token.*;
 import edu.cmu.cs.diamond.diamonddraid.R;
 import android.app.Activity;
 import android.content.Context;
@@ -35,31 +36,41 @@ public class MainActivity extends Activity {
     }
         
     
-    private void isFace(byte[] img) throws IOException {
+    private void isFace(byte[] jpegImage) throws IOException {
         Log.d(TAG, "Creating RGB filter.");
         Filter rgbFilter = new Filter(FilterEnum.RGBIMG, context, "RGB", null, null);
-        while (rgbFilter.getNextOutputTag() != TagEnum.INIT);
+        while (rgbFilter.getNextToken().tag != TagEnum.INIT);
         Log.d(TAG, "RGB filter initialized.");
-        while (rgbFilter.getNextOutputTag() != TagEnum.GET);
+        while (rgbFilter.getNextToken().tag != TagEnum.GET);
         Log.d(TAG, "RGB filter ready to receive input.");
 
         Log.d(TAG, "Sending JPEG image to RGB filter.");
-        rgbFilter.sendBinary(img);
-        byte[] rgbImage = rgbFilter.readByteArray();
+        Log.d(TAG, "JPEG image size: " + String.valueOf(jpegImage.length) + " bytes.");
+        rgbFilter.sendBinary(jpegImage);
+        byte[] rgbImage = null;
+        while (rgbImage == null) {
+            Token t = rgbFilter.getNextToken();
+            if (t.tag == TagEnum.SET) {
+                SetToken st = (SetToken) t;
+                if (st.var.equals("_rgb_image.rgbimage")) {
+                    rgbImage = st.buf;
+                }
+            }
+        }
         Log.d(TAG, "Obtained RGB image from RGB filter.");
+        Log.d(TAG, "RGB image size: " + String.valueOf(rgbImage.length) + " bytes.");
         
         Log.d(TAG, "Creating OCV face filter.");
         String[] faceFilterArgs = {"1.2", "24", "24", "1", "2"};
-        InputStream ocvXmlIS = context.getResources().openRawResource(R.raw.ocv_face_xml);
+        InputStream ocvXmlIS = context.getResources().openRawResource(R.raw.haarcascade_frontalface);
         byte[] ocvXml = IOUtils.toByteArray(ocvXmlIS);
         Filter faceFilter = new Filter(FilterEnum.OCV_FACE, context, "OCVFace",
             faceFilterArgs, ocvXml);
-        while (rgbFilter.getNextOutputTag() != TagEnum.INIT);
+        while (faceFilter.getNextToken().tag != TagEnum.INIT);
         Log.d(TAG, "OCV face filter initialized.");
 
         Log.d(TAG, "Sending RGB image to OCV face filter.");
         faceFilter.sendBinary(rgbImage);
-        faceFilter.dumpStdoutAndStderr();
         
         rgbFilter.destroy();
         faceFilter.destroy();
