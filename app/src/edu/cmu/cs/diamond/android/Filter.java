@@ -31,6 +31,7 @@ public class Filter {
             ProcessBuilder pb = new ProcessBuilder(f.getAbsolutePath());
             Map<String,String> env = pb.environment();
             tempDir = File.createTempFile("filter", null, context.getCacheDir());
+            tempDir.delete(); // Delete file and create directory.
             if (!tempDir.mkdir()) {
                 throw new IOException("Unable to create temporary directory.");
             }
