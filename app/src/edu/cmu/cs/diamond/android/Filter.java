@@ -48,8 +48,14 @@ public class Filter {
         sendBinary(blob);
     }
     
-    public void destroy() throws IOException {
-        FileUtils.deleteDirectory(tempDir);
+    public void destroy() {
+        proc.destroy();
+        try {
+            FileUtils.deleteDirectory(tempDir);
+        } catch (IOException e) {
+            Log.i(TAG, "Failed to destroy temporary directory '"
+                + tempDir.getAbsolutePath() + "'.");
+        }
     }
 
     public static void loadFilters(Context context) throws IOException {
@@ -136,8 +142,27 @@ public class Filter {
     }
 
     public void dumpStdoutAndStderr() throws IOException {
-        Log.d(TAG, "stdout: " + IOUtils.toString(proc.getInputStream()));
-        Log.d(TAG, "stderr: " + IOUtils.toString(proc.getErrorStream()));
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    while (true) {
+                        Log.d(TAG, "stdout: "+br.readLine());
+                    }
+                } catch (IOException e) { e.printStackTrace(); }
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    BufferedReader err_br = new BufferedReader(new InputStreamReader(
+                        proc.getErrorStream()));
+                    while (true) {
+                        Log.d(TAG, "stderr: "+err_br.readLine());
+                    }
+                } catch (IOException e) { e.printStackTrace(); }
+            }
+        }).start();
     }
     
 }
