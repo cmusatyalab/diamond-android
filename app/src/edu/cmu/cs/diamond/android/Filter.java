@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import edu.cmu.cs.diamond.android.token.*;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
@@ -21,7 +22,6 @@ public class Filter {
 
     public Process proc;
     private InputStream is;
-    private BufferedReader br;
     private OutputStream os;
     private File tempDir;
 
@@ -39,7 +39,6 @@ public class Filter {
             env.put("TMPDIR", tempDir.getAbsolutePath());
             proc = pb.start();
             is = proc.getInputStream();
-            br = new BufferedReader(new InputStreamReader(is));
             os = proc.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -103,17 +102,25 @@ public class Filter {
         sendBlank();
     }
 
-    public String readTagStr() throws IOException {
-        return br.readLine();
+    private String readLine() throws IOException {
+        StringBuilder buf = new StringBuilder();
+        char c = 0;
+        do {
+            c = (char) is.read();
+            if (c != '\n' && c != '\0') buf.append(c);
+        } while (c != '\n' && c != '\0');
+        return buf.toString();
     }
 
+    public String readTagStr() throws IOException {
+        return readLine();
+    }
+    
     public String readString() throws NumberFormatException, IOException {
-        int len = Integer.parseInt(br.readLine());
-        char[] buf = new char[len];
-        IOUtils.read(br, buf, 0, len);
-        br.read();
-        Log.d(TAG, Integer.toString(len));
-        Log.d(TAG, new String(buf));
+        int len = Integer.parseInt(readLine());
+        byte[] buf = new byte[len];
+        is.read(buf, 0, len);
+        is.read();
         return new String(buf);
     }
 
@@ -122,34 +129,48 @@ public class Filter {
     }
     
     public byte[] readByteArray() throws IOException {
-        int len = Integer.parseInt(br.readLine());
+        int len = Integer.parseInt(readLine());
         byte[] buf = new byte[len];
-        IOUtils.read(is, buf, 0, len);
-        br.read();
-        Log.d(TAG, Integer.toString(len));
-        Log.d(TAG, new String(buf));
+        is.read(buf, 0, len);
+        is.read();
+//        Log.d(TAG, Integer.toString(len));
+//        Log.d(TAG, new String(buf));
         return buf;
     }
     
-    public TagEnum getNextOutputTag() throws IOException {
-        TagEnum tag = TagEnum.findByStr(readTagStr());
+    public Token getNextToken() throws IOException {
+        String tagString = readTagStr();
+        Log.d(TAG, "=== getNextToken");
+        Log.d(TAG, "tag: " + tagString);
+        TagEnum tag = TagEnum.findByStr(tagString);
         switch (tag) {
             case LOG:
-                readInt();
-                readString();
-                break;
+                int logLevel = readInt();
+                String msg = readString();
+                return new LogToken(logLevel, msg);
+            case GET:
+                String getVar = readString();
+                return new GetToken(getVar);
+            case SET:
+                String setVar = readString();
+                byte[] buf = readByteArray();
+                Log.d(TAG, "  + var: "+setVar);
+                Log.d(TAG, "  + buf: "+new String(buf));
+                return new SetToken(setVar, buf);
             default:
-                break;
+                return new Token(tag);
         }
-        return tag;
     }
+    
+    private String logStr;
+    public String getOutputToken() { return logStr; }
 
     public void dumpStdoutAndStderr() throws IOException {
         new Thread(new Runnable() {
             public void run() {
                 try {
                     while (true) {
-                        Log.d(TAG, "stdout: "+br.readLine());
+                        Log.d(TAG, "stdout: "+readLine());
                     }
                 } catch (IOException e) { e.printStackTrace(); }
             }

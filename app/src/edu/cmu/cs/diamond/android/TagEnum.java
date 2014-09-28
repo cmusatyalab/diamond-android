@@ -8,7 +8,8 @@ public enum TagEnum {
     SESSIONGET("get-session-variables"),
     SESSIONUPDATE("update-session-variables"),
     LOG("log"),
-    RESULT("result");
+    RESULT("result"),
+    UNKNOWN("unknown");
 
     public final String str;
     TagEnum(String str) { this.str = str; }
@@ -17,6 +18,6 @@ public enum TagEnum {
         for (TagEnum t : values()) {
             if (t.str.equals(str)) return t;
         }
-        return null;
+        return UNKNOWN;
     }
 }
