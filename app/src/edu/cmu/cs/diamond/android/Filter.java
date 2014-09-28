@@ -45,23 +45,15 @@ public class Filter {
         sendBinary(blob);
     }
 
-    public static void loadFilters(Context context) {
+    public static void loadFilters(Context context) throws IOException {
         Resources r = context.getResources();
         for (FilterEnum f : FilterEnum.values()) {
             InputStream ins = r.openRawResource(f.id);
             String name = r.getResourceEntryName(f.id);
-            byte[] buffer;
-            try {
-                buffer = new byte[ins.available()];
-                ins.read(buffer);
-                ins.close();
-                FileOutputStream fos = context.openFileOutput(name, Context.MODE_PRIVATE);
-                fos.write(buffer);
-                fos.close();
-                context.getFileStreamPath(name).setExecutable(true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            byte[] buf = IOUtils.toByteArray(ins);
+            FileOutputStream fos = context.openFileOutput(name, Context.MODE_PRIVATE);
+            IOUtils.write(buf, fos);
+            context.getFileStreamPath(name).setExecutable(true);
         }
     }
     

@@ -9,10 +9,8 @@ import edu.cmu.cs.diamond.diamonddraid.R;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 public class MainActivity extends Activity {
-    @SuppressWarnings("unused")
     private final String TAG = this.getClass().getSimpleName();
 
     Context context = this.getApplicationContext();
@@ -22,9 +20,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Filter.loadFilters(context);
-
         try {
+            Filter.loadFilters(context);
             byte[] me = loadImageFromRes(R.raw.me);
             isFace(me);
 //            char[] notFace = loadImageFromRes(R.raw.not_face);
