@@ -16,6 +16,8 @@ public class MainActivity extends Activity {
     private final String TAG = this.getClass().getSimpleName();
 
     private Context context;
+    private Filter rgbFilter;
+    private Filter faceFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,22 @@ public class MainActivity extends Activity {
         try {
             Filter.loadFilters(context);
 
+            Log.d(TAG, "Creating RGB filter.");
+            rgbFilter = new Filter(FilterEnum.RGBIMG, context, "RGB", null, null);
+            while (rgbFilter.getNextToken().tag != TagEnum.INIT);
+            Log.d(TAG, "RGB filter initialized.");
+            while (rgbFilter.getNextToken().tag != TagEnum.GET);
+            Log.d(TAG, "RGB filter ready to receive input.");
+
+            Log.d(TAG, "Creating OCV face filter.");
+            String[] faceFilterArgs = {"1.2", "24", "24", "1", "2"};
+            InputStream ocvXmlIS = context.getResources().openRawResource(R.raw.haarcascade_frontalface);
+            byte[] ocvXml = IOUtils.toByteArray(ocvXmlIS);
+            faceFilter = new Filter(FilterEnum.OCV_FACE, context, "OCVFace",
+                faceFilterArgs, ocvXml);
+            while (faceFilter.getNextToken().tag != TagEnum.INIT);
+            Log.d(TAG, "OCV face filter initialized.");
+
             Log.d(TAG, "Checking image with a face.");
             byte[] me = loadImageFromRes(R.raw.me);
             isFace(me);
@@ -33,6 +51,9 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Checking image without a face.");
             byte[] notFace = loadImageFromRes(R.raw.not_face);
             isFace(notFace);
+
+            rgbFilter.destroy();
+            faceFilter.destroy();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -41,13 +62,6 @@ public class MainActivity extends Activity {
         
     
     private void isFace(byte[] jpegImage) throws IOException {
-        Log.d(TAG, "Creating RGB filter.");
-        Filter rgbFilter = new Filter(FilterEnum.RGBIMG, context, "RGB", null, null);
-        while (rgbFilter.getNextToken().tag != TagEnum.INIT);
-        Log.d(TAG, "RGB filter initialized.");
-        while (rgbFilter.getNextToken().tag != TagEnum.GET);
-        Log.d(TAG, "RGB filter ready to receive input.");
-
         Log.d(TAG, "Sending JPEG image to RGB filter.");
         Log.d(TAG, "JPEG image size: " + String.valueOf(jpegImage.length) + " bytes.");
         rgbFilter.sendBinary(jpegImage);
@@ -65,15 +79,16 @@ public class MainActivity extends Activity {
         }
         Log.d(TAG, "Obtained RGB image from RGB filter.");
         Log.d(TAG, "RGB image size: " + String.valueOf(rgbImage.length) + " bytes.");
-        
-        Log.d(TAG, "Creating OCV face filter.");
-        String[] faceFilterArgs = {"1.2", "24", "24", "1", "2"};
-        InputStream ocvXmlIS = context.getResources().openRawResource(R.raw.haarcascade_frontalface);
-        byte[] ocvXml = IOUtils.toByteArray(ocvXmlIS);
-        Filter faceFilter = new Filter(FilterEnum.OCV_FACE, context, "OCVFace",
-            faceFilterArgs, ocvXml);
-        while (faceFilter.getNextToken().tag != TagEnum.INIT);
-        Log.d(TAG, "OCV face filter initialized.");
+        Log.d(TAG, "Preparing RGB filter for next input.");
+        boolean rgbReady = false;
+        while (!rgbReady) {
+            Token t = rgbFilter.getNextToken();
+            if (t.tag == TagEnum.OMIT) {
+                rgbFilter.sendString("false");
+            } else if (t.tag == TagEnum.RESULT) {
+                rgbReady = true;
+            }
+        }
 
         Log.d(TAG, "Sending RGB image to OCV face filter.");
         faceFilter.sendBinary(rgbImage);
@@ -86,9 +101,6 @@ public class MainActivity extends Activity {
                 foundResult = true;
             }
         }
-        
-        rgbFilter.destroy();
-        faceFilter.destroy();
     }
 
     private byte[] loadImageFromRes(int id) throws IOException {

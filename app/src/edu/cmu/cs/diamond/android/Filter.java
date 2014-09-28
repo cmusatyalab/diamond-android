@@ -139,7 +139,10 @@ public class Filter {
     public String readString() throws NumberFormatException, IOException {
         int len = Integer.parseInt(readLine());
         byte[] buf = new byte[len];
-        is.read(buf, 0, len);
+        int readLen = IOUtils.read(is, buf, 0, len);
+        if (len != readLen) {
+            throw new RuntimeException("Error reading all bytes from the InputStream.");
+        }
         is.read();
         return new String(buf);
     }
@@ -154,7 +157,10 @@ public class Filter {
     public byte[] readByteArray() throws IOException {
         int len = Integer.parseInt(readLine());
         byte[] buf = new byte[len];
-        is.read(buf, 0, len);
+        int readLen = IOUtils.read(is, buf, 0, len);
+        if (len != readLen) {
+            throw new RuntimeException("Error reading all bytes from the InputStream.");
+        }
         is.read();
         return buf;
     }
@@ -165,6 +171,8 @@ public class Filter {
         Log.d(TAG, "tag: " + tagString);
         TagEnum tag = TagEnum.findByStr(tagString);
         switch (tag) {
+            case INIT:
+                return new Token(tag);
             case LOG:
                 int logLevel = readInt();
                 String msg = readString();
@@ -178,11 +186,16 @@ public class Filter {
                 String setVar = readString();
                 Log.d(TAG, "  set: " + setVar);
                 byte[] buf = readByteArray();
+                Log.d(TAG, "  buf.len: " + String.valueOf(buf.length));
                 return new SetToken(setVar, buf);
             case RESULT:
                 double resVar = readDouble();
                 return new ResultToken(resVar);
+            case OMIT:
+                String omitVar = readString();
+                return new OmitToken(omitVar);
             default:
+                Log.i(TAG, "getNextToken: Warning: " + tagString + " unimplemented.");
                 return new Token(tag);
         }
     }
