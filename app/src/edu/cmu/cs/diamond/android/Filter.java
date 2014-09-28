@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.security.MessageDigest;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -91,11 +92,26 @@ public class Filter {
     public void sendInt(int i) throws IOException { sendString(Integer.toString(i)); }
     public void sendDouble(double d) throws IOException { sendString(Double.toString(d)); }
 
+    public static String getHash(byte[] b) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(b);
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; ++i) {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+        }
+        return null;
+    }
+
     public void sendBinary(byte[] b) throws IOException {
         if (b == null) {
             IOUtils.write("0", os);
         }
         else {
+            Log.d(TAG, "SendingBinary: " + getHash(b));
             IOUtils.write(Integer.toString(b.length), os);
         }
         sendBlank();
@@ -140,8 +156,6 @@ public class Filter {
         byte[] buf = new byte[len];
         is.read(buf, 0, len);
         is.read();
-//        Log.d(TAG, Integer.toString(len));
-//        Log.d(TAG, new String(buf));
         return buf;
     }
     

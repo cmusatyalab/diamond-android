@@ -25,8 +25,12 @@ public class MainActivity extends Activity {
 
         try {
             Filter.loadFilters(context);
+
+            Log.d(TAG, "Checking image with a face.");
             byte[] me = loadImageFromRes(R.raw.me);
             isFace(me);
+
+            Log.d(TAG, "Checking image without a face.");
             byte[] notFace = loadImageFromRes(R.raw.not_face);
             isFace(notFace);
         } catch (IOException e) {
