@@ -1,4 +1,4 @@
-package edu.cmu.cs.diamond.diamond.android;
+package edu.cmu.cs.diamond.android;
 
 import edu.cmu.cs.diamond.diamonddraid.R;
 

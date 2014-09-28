@@ -1,4 +1,4 @@
-package edu.cmu.cs.diamond.diamond.android;
+package edu.cmu.cs.diamond.android;
 
 public enum TagEnum {
     INIT("init-success"),

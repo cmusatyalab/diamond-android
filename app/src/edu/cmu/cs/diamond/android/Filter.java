@@ -1,4 +1,4 @@
-package edu.cmu.cs.diamond.diamond.android;
+package edu.cmu.cs.diamond.android;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
@@ -25,8 +26,12 @@ public class Filter {
     public Filter(FilterEnum type, Context context, String name, String[] args, byte[] blob) throws IOException {
         File f = context.getFileStreamPath(context.getResources().getResourceEntryName(type.id));
         try {
-            Runtime RT = Runtime.getRuntime();
-            proc = RT.exec(f.getAbsolutePath());
+            ProcessBuilder pb = new ProcessBuilder(f.getAbsolutePath());
+            Map<String,String> env = pb.environment();
+            env.put("TEMP", context.getCacheDir().getAbsolutePath());
+            env.put("TMPDIR", context.getCacheDir().getAbsolutePath());
+            Log.d(TAG, context.getCacheDir().getAbsolutePath());
+            proc = pb.start();
             is = proc.getInputStream();
             br = new BufferedReader(new InputStreamReader(is));
             os = proc.getOutputStream();
