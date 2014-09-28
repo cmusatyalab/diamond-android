@@ -60,6 +60,9 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Sending RGB image to OCV face filter.");
         faceFilter.sendBinary(rgbImage);
         faceFilter.dumpStdoutAndStderr();
+        
+        rgbFilter.destroy();
+        faceFilter.destroy();
     }
 
     private byte[] loadImageFromRes(int id) throws IOException {

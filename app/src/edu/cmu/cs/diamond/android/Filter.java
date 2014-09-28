@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -31,7 +32,6 @@ public class Filter {
             Map<String,String> env = pb.environment();
             tempDir = File.createTempFile("filter", null, context.getCacheDir());
             tempDir.mkdir();
-            tempDir.deleteOnExit();
             env.put("TEMP", tempDir.getAbsolutePath());
             env.put("TMPDIR", tempDir.getAbsolutePath());
             proc = pb.start();
@@ -48,8 +48,8 @@ public class Filter {
         sendBinary(blob);
     }
     
-    public void destroy() {
-        tempDir.delete();
+    public void destroy() throws IOException {
+        FileUtils.deleteDirectory(tempDir);
     }
 
     public static void loadFilters(Context context) throws IOException {
