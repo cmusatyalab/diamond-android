@@ -34,7 +34,6 @@ public class Filter {
             tempDir.deleteOnExit();
             env.put("TEMP", tempDir.getAbsolutePath());
             env.put("TMPDIR", tempDir.getAbsolutePath());
-            Log.d(TAG, tempDir.getAbsolutePath());
             proc = pb.start();
             is = proc.getInputStream();
             br = new BufferedReader(new InputStreamReader(is));
