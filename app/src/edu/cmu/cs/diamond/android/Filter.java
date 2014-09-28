@@ -22,15 +22,19 @@ public class Filter {
     private InputStream is;
     private BufferedReader br;
     private OutputStream os;
+    private File tempDir;
 
     public Filter(FilterEnum type, Context context, String name, String[] args, byte[] blob) throws IOException {
         File f = context.getFileStreamPath(context.getResources().getResourceEntryName(type.id));
         try {
             ProcessBuilder pb = new ProcessBuilder(f.getAbsolutePath());
             Map<String,String> env = pb.environment();
-            env.put("TEMP", context.getCacheDir().getAbsolutePath());
-            env.put("TMPDIR", context.getCacheDir().getAbsolutePath());
-            Log.d(TAG, context.getCacheDir().getAbsolutePath());
+            tempDir = File.createTempFile("filter", null, context.getCacheDir());
+            tempDir.mkdir();
+            tempDir.deleteOnExit();
+            env.put("TEMP", tempDir.getAbsolutePath());
+            env.put("TMPDIR", tempDir.getAbsolutePath());
+            Log.d(TAG, tempDir.getAbsolutePath());
             proc = pb.start();
             is = proc.getInputStream();
             br = new BufferedReader(new InputStreamReader(is));
@@ -43,6 +47,10 @@ public class Filter {
         sendString(name);
         sendStringArray(args);
         sendBinary(blob);
+    }
+    
+    public void destroy() {
+        tempDir.delete();
     }
 
     public static void loadFilters(Context context) throws IOException {
