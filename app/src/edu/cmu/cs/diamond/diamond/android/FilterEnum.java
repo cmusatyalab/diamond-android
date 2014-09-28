@@ -1,4 +1,6 @@
-package edu.cmu.cs.diamond.diamonddraid;
+package edu.cmu.cs.diamond.diamond.android;
+
+import edu.cmu.cs.diamond.diamonddraid.R;
 
 public enum FilterEnum {
     DOG_TEXTURE(R.raw.dog_texture),

@@ -1,4 +1,4 @@
-package edu.cmu.cs.diamond.diamonddraid;
+package edu.cmu.cs.diamond.diamond.android;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +18,7 @@ public class Filter {
     private final String TAG = this.getClass().getSimpleName();
 
     public Process proc;
+    private InputStream is;
     private BufferedReader br;
     private OutputStream os;
 
@@ -26,7 +27,8 @@ public class Filter {
         try {
             Runtime RT = Runtime.getRuntime();
             proc = RT.exec(f.getAbsolutePath());
-            br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            is = proc.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
             os = proc.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,23 +89,51 @@ public class Filter {
         if (b != null) IOUtils.write(b, os);
         sendBlank();
     }
-    
-    public String readTag() throws IOException {
-            return br.readLine();
+
+    public String readTagStr() throws IOException {
+        return br.readLine();
     }
-    
+
     public String readString() throws NumberFormatException, IOException {
-            @SuppressWarnings("unused")
-            int len = Integer.parseInt(br.readLine());
-            return br.readLine();
+        int len = Integer.parseInt(br.readLine());
+        char[] buf = new char[len];
+        IOUtils.read(br, buf, 0, len);
+        br.read();
+        Log.d(TAG, Integer.toString(len));
+        Log.d(TAG, new String(buf));
+        return new String(buf);
     }
-    
+
     public int readInt() throws NumberFormatException, IOException {
         return Integer.parseInt(readString());
     }
     
+    public byte[] readByteArray() throws IOException {
+        int len = Integer.parseInt(br.readLine());
+        byte[] buf = new byte[len];
+        IOUtils.read(is, buf, 0, len);
+        br.read();
+        Log.d(TAG, Integer.toString(len));
+        Log.d(TAG, new String(buf));
+        return buf;
+    }
+    
+    public TagEnum getNextOutputTag() throws IOException {
+        TagEnum tag = TagEnum.findByStr(readTagStr());
+        switch (tag) {
+            case LOG:
+                readInt();
+                readString();
+                break;
+            default:
+                break;
+        }
+        return tag;
+    }
+
     public void dumpStdoutAndStderr() throws IOException {
         Log.d(TAG, "stdout: " + IOUtils.toString(proc.getInputStream()));
         Log.d(TAG, "stderr: " + IOUtils.toString(proc.getErrorStream()));
     }
+    
 }
