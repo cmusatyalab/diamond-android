@@ -6,26 +6,27 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
+
+import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
 import android.util.Log;
 
 public class Filter {
-    @SuppressWarnings("unused")
     private final String TAG = this.getClass().getSimpleName();
 
     public Process proc;
     private BufferedReader br;
-    private OutputStreamWriter os;
+    private OutputStream os;
 
-    public Filter(FilterEnum type, Context context, String name, String[] args, char[] blob) {
+    public Filter(FilterEnum type, Context context, String name, String[] args, byte[] blob) throws IOException {
         File f = context.getFileStreamPath(getResourceName(type));
         try {
             Runtime RT = Runtime.getRuntime();
             proc = RT.exec(f.getAbsolutePath());
             br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            os = new OutputStreamWriter(proc.getOutputStream());
+            os = proc.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,80 +57,53 @@ public class Filter {
         }
     }
     
-    public void sendBlank() {
-        try{
-            os.write("\n");
-            os.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void sendBlank() throws IOException {
+        IOUtils.write("\n", os);
+        os.flush();
     }
 
-    public void sendString(String s) {
-        try {
-            os.write(Integer.toString(s.length()));
-            sendBlank();
-            os.write(s);
-            os.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void sendString(String s) throws IOException {
+        IOUtils.write(Integer.toString(s.length()), os);
+        sendBlank();
+        IOUtils.write(s, os);
+        os.flush();
     }
     
-    public void sendStringArray(String[] a) {
+    public void sendStringArray(String[] a) throws IOException {
         if (a != null) {
             for (String s : a) sendString(s);
         }
         sendBlank();
     }
     
-    public void sendInt(int i) { sendString(Integer.toString(i)); }
-    public void sendDouble(double d) { sendString(Double.toString(d)); }
+    public void sendInt(int i) throws IOException { sendString(Integer.toString(i)); }
+    public void sendDouble(double d) throws IOException { sendString(Double.toString(d)); }
     
-    public void sendBinary(char[] b) {
-        try {
-            if (b == null) os.write('0');
-            else os.write(Integer.toString(b.length));
-            sendBlank();
-            if (b != null) os.write(b);
-            sendBlank();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void sendBinary(byte[] b) throws IOException {
+        if (b == null) IOUtils.write("0", os);
+        else IOUtils.write(Integer.toString(b.length), os);
+        sendBlank();
+        if (b != null) IOUtils.write(b, os);
+        sendBlank();
     }
     
-    public String readTag() {
-        try {
+    public String readTag() throws IOException {
             return br.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
     
-    public String readString() {
-        try {
+    public String readString() throws NumberFormatException, IOException {
             @SuppressWarnings("unused")
             int len = Integer.parseInt(br.readLine());
             return br.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
     
-    public int readInt() {
+    public int readInt() throws NumberFormatException, IOException {
         return Integer.parseInt(readString());
     }
     
-    public void dumpStderrLine() {
-        try {
+    public void dumpStderrLine() throws IOException {
             Log.d(TAG, "Err: " + new BufferedReader(
                 new InputStreamReader(proc.getErrorStream())).readLine());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
     
     private static String getResourceName(FilterEnum f) {
@@ -137,7 +111,7 @@ public class Filter {
             case DOG_TEXTURE: return "dog_texture";
             case GABOR_TEXTURE: return "gabor_texture";
             case IMG_DIFF: return "img_diff";
-            case NULL_FIL: return "null_fil";
+            case NULL_FILTER: return "null_filter";
             case NUM_ATTR: return "num_attr";
             case OCV_FACE: return "ocv_face";
             case RGB_HISTOGRAM: return "rgb_histogram";
@@ -154,7 +128,7 @@ public class Filter {
             case DOG_TEXTURE: return R.raw.dog_texture;
             case GABOR_TEXTURE: return R.raw.gabor_texture;
             case IMG_DIFF: return R.raw.img_diff;
-            case NULL_FIL: return R.raw.null_fil;
+            case NULL_FILTER: return R.raw.null_filter;
             case NUM_ATTR: return R.raw.num_attr;
             case OCV_FACE: return R.raw.ocv_face;
             case RGB_HISTOGRAM: return R.raw.rgb_histogram;
