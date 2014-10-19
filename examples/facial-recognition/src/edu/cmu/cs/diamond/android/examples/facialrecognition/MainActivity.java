@@ -141,11 +141,7 @@ public class MainActivity extends Activity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-    
-    @Override
-    protected void onResume() {
-        super.onResume();
+
         mCamera.setPreviewCallback(previewCallback);
         processingThread.start();
     }
