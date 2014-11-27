@@ -1,7 +1,7 @@
 TODO - Create diagram.
 
 Mobile devices have powerful processors and streaming and processing
-video in real time is becoming a reality by leverging
+video in real time is becoming a reality by leveraging
 resource-rich cloudlets, as described in
 ["The Case for VM-Based Cloudlets in Mobile Computing"][case-for-cloudlets].
 Real-time video processing is becoming a reality,
