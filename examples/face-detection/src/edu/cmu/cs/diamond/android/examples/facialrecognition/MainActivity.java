@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
                 try {
                     faceInFrame = isFace(jpgFrame, rgbFilter, faceFilter);
                 } catch (Exception e) {
-                    mClassificationText.setText("No face detected.");
+                    mClassificationText.setText("Detection exception.");
                     e.printStackTrace();
                 }
 
