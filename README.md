@@ -44,6 +44,8 @@ TODO:
 We also used the following C implementations of functions we
 couldn't otherwise resolve.
 
++ https://github.com/ivanra/getline
+
 https://raw.githubusercontent.com/NimbusKit/memorymapping/master/src/fmemopen.h
 http://www.opensource.apple.com/source/cvs/cvs-19/cvs/lib/getline.c?txt
 http://piumarta.com/software/memstream/memstream-0.1/memstream.c
