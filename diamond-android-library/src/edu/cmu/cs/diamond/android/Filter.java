@@ -45,6 +45,9 @@ public class Filter {
         sendString(name);
         sendStringArray(args);
         sendBinary(blob);
+
+        while (this.getNextToken().tag != TagEnum.INIT);
+        Log.d(TAG, "Filter initialized.");
     }
     
     public void destroy() {
@@ -69,12 +72,46 @@ public class Filter {
         }
     }
     
-    public void sendBlank() throws IOException {
+    public double process(Map<String, byte[]> m) throws IOException, FilterException {
+        while (true) {
+            Token t = this.getNextToken();
+            switch (t.tag) {
+                case GET:
+                    GetToken gt = (GetToken) t;
+                    if (!m.containsKey(gt.var)) {
+                        throw new FilterException("Value not found in map.");
+                    }
+                    this.sendBinary(m.get(gt.var));
+                    break;
+                case SET:
+                    SetToken st = (SetToken) t;
+                    m.put(st.var, st.buf);
+                    break;
+                case RESULT:
+                    ResultToken rt = (ResultToken) t;
+                    return rt.var;
+                case OMIT:
+                    OmitToken ot = (OmitToken) t;
+                    this.sendBoolean(m.containsKey(ot.var));
+                case LOG:
+                    break;
+                default:
+                    throw new FilterException("Unimplemented Token found.");
+            }
+        }
+    }
+    
+    private void sendBlank() throws IOException {
         IOUtils.write("\n", os);
         os.flush();
     }
+    
+    private void sendBoolean(boolean b) throws IOException {
+        if (b) sendString("true");
+        else sendString("false");
+    }
 
-    public void sendString(String s) throws IOException {
+    private void sendString(String s) throws IOException {
         IOUtils.write(Integer.toString(s.length()), os);
         sendBlank();
         IOUtils.write(s, os);
@@ -82,17 +119,17 @@ public class Filter {
         os.flush();
     }
     
-    public void sendStringArray(String[] a) throws IOException {
+    private void sendStringArray(String[] a) throws IOException {
         if (a != null) {
             for (String s : a) sendString(s);
         }
         sendBlank();
     }
     
-    public void sendInt(int i) throws IOException { sendString(Integer.toString(i)); }
-    public void sendDouble(double d) throws IOException { sendString(Double.toString(d)); }
+    private void sendInt(int i) throws IOException { sendString(Integer.toString(i)); }
+    private void sendDouble(double d) throws IOException { sendString(Double.toString(d)); }
 
-    public static String getHash(byte[] b) {
+    private static String getHash(byte[] b) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] array = md.digest(b);
@@ -106,7 +143,7 @@ public class Filter {
         return null;
     }
 
-    public void sendBinary(byte[] b) throws IOException {
+    private void sendBinary(byte[] b) throws IOException {
         if (b == null) {
             IOUtils.write("0", os);
         }
@@ -132,11 +169,11 @@ public class Filter {
         return buf.toString();
     }
 
-    public String readTagStr() throws IOException {
+    private String readTagStr() throws IOException {
         return readLine();
     }
     
-    public String readString() throws NumberFormatException, IOException {
+    private String readString() throws NumberFormatException, IOException {
         int len = Integer.parseInt(readLine());
         byte[] buf = new byte[len];
         int readLen = IOUtils.read(is, buf, 0, len);
@@ -147,14 +184,14 @@ public class Filter {
         return new String(buf);
     }
 
-    public double readDouble() throws NumberFormatException, IOException {
+    private double readDouble() throws NumberFormatException, IOException {
         return Double.parseDouble(readString());
     }
-    public int readInt() throws NumberFormatException, IOException {
+    private int readInt() throws NumberFormatException, IOException {
         return Integer.parseInt(readString());
     }
     
-    public byte[] readByteArray() throws IOException {
+    private byte[] readByteArray() throws IOException {
         int len = Integer.parseInt(readLine());
         byte[] buf = new byte[len];
         int readLen = IOUtils.read(is, buf, 0, len);
@@ -165,7 +202,7 @@ public class Filter {
         return buf;
     }
     
-    public Token getNextToken() throws IOException {
+    private Token getNextToken() throws IOException {
         String tagString = readTagStr();
         Log.d(TAG, "=== getNextToken");
         Log.d(TAG, "tag: " + tagString);
@@ -193,6 +230,7 @@ public class Filter {
                 return new ResultToken(resVar);
             case OMIT:
                 String omitVar = readString();
+                Log.d(TAG, "  var: " + omitVar);
                 return new OmitToken(omitVar);
             default:
                 Log.i(TAG, "getNextToken: Warning: " + tagString + " unimplemented.");

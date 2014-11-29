@@ -3,11 +3,14 @@ package edu.cmu.cs.diamond.android.examples.facialrecognition;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
 import edu.cmu.cs.diamond.android.Filter;
 import edu.cmu.cs.diamond.android.FilterEnum;
+import edu.cmu.cs.diamond.android.FilterException;
 import edu.cmu.cs.diamond.android.TagEnum;
 import edu.cmu.cs.diamond.android.examples.facialrecognition.R;
 import edu.cmu.cs.diamond.android.token.*;
@@ -47,32 +50,20 @@ public class MainActivity extends Activity {
     
     private Thread processingThread = new Thread() {
         public void run() {
-            Log.d(TAG, "Creating RGB filter.");
-            Filter rgbFilter = null, faceFilter = null;
+            String[] faceFilterArgs = {"1.2", "24", "24", "1", "2"};
+            InputStream ocvXmlIS = context.getResources().openRawResource(R.raw.haarcascade_frontalface);
+            Filter rgbFilter, faceFilter;
             try {
                 rgbFilter = new Filter(FilterEnum.RGBIMG, context, "RGB", null, null);
-                while (rgbFilter.getNextToken().tag != TagEnum.INIT);
-                Log.d(TAG, "RGB filter initialized.");
-                while (rgbFilter.getNextToken().tag != TagEnum.GET);
-                Log.d(TAG, "RGB filter ready to receive input.");
-
-                Log.d(TAG, "Creating OCV face filter.");
-                String[] faceFilterArgs = {"1.2", "24", "24", "1", "2"};
-                InputStream ocvXmlIS = context.getResources().openRawResource(R.raw.haarcascade_frontalface);
                 byte[] ocvXml = IOUtils.toByteArray(ocvXmlIS);
                 faceFilter = new Filter(FilterEnum.OCV_FACE, context, "OCVFace",
                     faceFilterArgs, ocvXml);
-                while (faceFilter.getNextToken().tag != TagEnum.INIT);
-                Log.d(TAG, "OCV face filter initialized.");
             } catch (IOException e1) {
-                // TODO Auto-generated catch block
+                Log.e(TAG, "Unable to create filter subprocess.");
                 e1.printStackTrace();
+                return;
             }
             
-            if (rgbFilter == null || faceFilter == null) {
-                throw new RuntimeException("Unable to create filter subprocesses.");
-            }
-
             while (isRunning) {
                 byte[] data = null;
                 synchronized(frameLock) {
@@ -94,13 +85,11 @@ public class MainActivity extends Activity {
                 boolean faceInFrame = false;
                 try {
                     faceInFrame = isFace(jpgFrame, rgbFilter, faceFilter);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     mClassificationText.setText("No face detected.");
                     e.printStackTrace();
                 }
 
-//                Message msg = handler.obtainMessage();
-//                msg.what = 1;
                 final String classification;
                 if (faceInFrame) {
                     Log.i(TAG, "Face detected.");
@@ -115,7 +104,6 @@ public class MainActivity extends Activity {
                        mClassificationText.invalidate();
                    }
                 });
-//                handler.sendMessage(msg);
             }
         }
     };
@@ -158,49 +146,20 @@ public class MainActivity extends Activity {
         }
     }
     
-    private boolean isFace(byte[] jpegImage, Filter rgbFilter, Filter faceFilter) throws IOException {
+    private boolean isFace(byte[] jpegImage, Filter rgbFilter, Filter faceFilter) throws IOException, FilterException {
+        final Map<String,byte[]> m = new HashMap<String,byte[]>();
         Log.d(TAG, "Sending JPEG image to RGB filter.");
         Log.d(TAG, "JPEG image size: " + String.valueOf(jpegImage.length) + " bytes.");
-        rgbFilter.sendBinary(jpegImage);
 
-        Log.d(TAG, "Receiving RGB output buffer.");
-        byte[] rgbImage = null;
-        while (rgbImage == null) {
-            Token t = rgbFilter.getNextToken();
-            if (t.tag == TagEnum.SET) {
-                SetToken st = (SetToken) t;
-                if (st.var.equals("_rgb_image.rgbimage")) {
-                    rgbImage = st.buf;
-                }
-            }
-        }
+        m.put("", jpegImage);
+        rgbFilter.process(m);
+        byte[] rgbImage = m.get("_rgb_image.rgbimage");
+
         Log.d(TAG, "Obtained RGB image from RGB filter.");
         Log.d(TAG, "RGB image size: " + String.valueOf(rgbImage.length) + " bytes.");
-        Log.d(TAG, "Preparing RGB filter for next input.");
-        boolean rgbReady = false;
-        while (!rgbReady) {
-            Token t = rgbFilter.getNextToken();
-            if (t.tag == TagEnum.OMIT) {
-                rgbFilter.sendString("false");
-            } else if (t.tag == TagEnum.RESULT) {
-                rgbReady = true;
-            }
-        }
 
         Log.d(TAG, "Sending RGB image to OCV face filter.");
-        faceFilter.sendBinary(rgbImage);
-        while (true) {
-            Token t = faceFilter.getNextToken();
-            if (t.tag == TagEnum.RESULT) {
-                ResultToken rt = (ResultToken) t;
-                Log.i(TAG, "Result: " + String.valueOf(rt.var));
-                return Math.abs(rt.var - 1.0) < 1E-6;
-            }
-        }
+        double faceRecognized = faceFilter.process(m);
+        return Math.abs(faceRecognized-1.0d) < 1E-6;
     }
-
-//    private byte[] loadImageFromRes(int id) throws IOException {
-//        InputStream ins = this.getApplicationContext().getResources().openRawResource(id);
-//        return IOUtils.toByteArray(ins);
-//    }
 }
