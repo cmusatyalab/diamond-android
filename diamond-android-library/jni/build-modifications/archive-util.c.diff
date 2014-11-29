@@ -1,3 +1,8 @@
-78a79,80
-> int wctomb(char *s, wchar_t wc) { return wcrtomb(s,wc,NULL); }
-> int mbtowc(wchar_t *pwc, const char *s, size_t n) { return mbrtowc(pwc, s, n, NULL); }
+149c149
+< 	if (mbtowc(NULL, NULL, 1) == -1) { /* Reset the shift state. */
+---
+> 	if (mbrtowc(NULL, NULL, 1, NULL) == -1) { /* Reset the shift state. */
+164c164
+< 		if (try_wc && (n = mbtowc(&wc, p, length)) != -1) {
+---
+> 		if (try_wc && (n = mbrtowc(&wc, p, length, NULL)) != -1) {
