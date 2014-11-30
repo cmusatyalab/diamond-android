@@ -6,7 +6,6 @@ LARCHIVE := $(ROOT)/libarchive-3.1.2
 LJPEG := $(ROOT)/libjpeg-turbo-1.3.1
 LTIFF := $(ROOT)/tiff-4.0.3
 LPNG := $(ROOT)/libpng-1.6.12
-ZLIB := $(ROOT)/zlib-1.2.8
 
 LOCAL_LDLIBS := \
 	$(OPENDIAMOND)/libfilter/obj/local/armeabi/libfilter.a \
@@ -19,10 +18,9 @@ LOCAL_LDLIBS := \
 	$(LTIFF)/port/.libs/libport.a \
 	$(LPNG)/.libs/libpng16.a \
 	$(LARCHIVE)/.libs/libarchive.a \
-	$(ZLIB)/libz.a \
   $(wildcard $(GLIB)/obj/local/armeabi/*.a) \
 	$(ROOT)/toolchain/arm-linux-androideabi/lib/libstdc++.a \
-	-llog
+	-llog -lz
 
 LOCAL_C_INCLUDES := \
 	../../include \

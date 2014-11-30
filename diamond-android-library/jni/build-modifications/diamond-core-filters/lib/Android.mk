@@ -2,10 +2,10 @@ LOCAL_PATH := $(call my-dir)
 OPENDIAMOND := ../../opendiamond
 CV := ../../OpenCV-2.4.9-android-sdk
 GLIB := ../../glib
-LARCHIVE := ../../libarchive-3.1.2
 LJPEG := ../../libjpeg-turbo-1.3.1
 LTIFF := ../../tiff-4.0.3
 LPNG := ../../libpng-1.6.12
+LARCHIVE := ../../libarchive-3.1.2
 
 include $(CLEAR_VARS)
 
@@ -41,7 +41,6 @@ LOCAL_LDLIBS := \
 	$(CV)/obj/local/armeabi/libcxcore.a \
 	$(CV)/obj/local/armeabi/libopencv.a \
 	$(CV)/obj/local/armeabi/libstdc++.a \
-	$(LARCHIVE)/.libs/libarchive.a \
 	$(LJPEG)/.libs/libjpeg.a \
 	$(LTIFF)/libtiff/.libs/libtiff.a \
 	$(LPNG)/.libs/libpng16.a
@@ -50,13 +49,15 @@ LOCAL_MODULE := libhelper
 
 LOCAL_C_INCLUDES := \
 	../include \
-	$(LARCHIVE)/libarchive \
 	$(OPENDIAMOND)/libfilter \
 	$(LJPEG) \
 	$(LTIFF)/libtiff \
 	$(LPNG) \
-	$(CV)/sdk/native/jni/include
+	$(CV)/sdk/native/jni/include \
+  $(LARCHIVE)/libarchive
 
 LOCAL_CFLAGS := -std=gnu99
+
+LOCAL_LDLIBS := -lz
 
 include $(BUILD_STATIC_LIBRARY)

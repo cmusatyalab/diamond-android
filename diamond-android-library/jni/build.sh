@@ -4,6 +4,15 @@ set -x -e
 
 die() { echo $*; exit -1; }
 
+patch_f() {
+  set +e
+  patch --dry-run -N $1 $2
+  if [[ $? == 0 ]]; then
+    patch -N $1 $2
+  fi
+  set -e
+}
+
 cd $(dirname "$0")
 
 if [[ ! -d toolchain ]]; then
@@ -15,12 +24,15 @@ fi
 pathadd() { PATH="${PATH:+"$PATH:"}$1"; }
 pathadd "$PWD/toolchain/bin"
 command -v arm-linux-androideabi-gcc &> /dev/null || exit -1
+export SYSROOT=$PWD/toolchain/sysroot
 export CC=arm-linux-androideabi-gcc
 export CXX=arm-linux-androideabi-g++
 export LD=arm-linux-androideabi-ld
 export RANLIB=arm-linux-androideabi-ranlib
 export AR=arm-linux-androideabi-ar
 export CROSS_PREFIX=arm-linux-androideabi-
+export CFLAGS='-march=armv7-a -mfloat-abi=softfp -mfpu=neon'
+export LDFLAGS='-Wl,--fix-cortex-a8'
 
 if [[ ! -d glib ]]; then
   git clone https://github.com/ieei/glib.git
@@ -53,7 +65,7 @@ if [[ ! -d OpenCV-2.4.9-android-sdk ]]; then
   rm OpenCV*.zip
 fi
 
-if [[ ! -d libarchive-3.1.2.tar.gz ]]; then
+if [[ ! -e libarchive-3.1.2.tar.gz ]]; then
   wget http://www.libarchive.org/downloads/libarchive-3.1.2.tar.gz
   tar xvfz libarchive*.gz
 fi
@@ -69,7 +81,7 @@ cat > archive_read_disk_posix.c<<EOF
 EOF
 cat archive_read_disk_posix.c.old >> archive_read_disk_posix.c
 cd ..
-patch tar/util.c ../build-modifications/archive-util.c.diff
+patch_f tar/util.c ../build-modifications/archive-util.c.diff
 ./configure --enable-static --host=arm-linux --without-xml2
 make -j8 || die "libarchive build failed."
 cd ..
@@ -83,13 +95,16 @@ cd libjpeg-turbo-1.3.1
 ./configure --enable-static --target=armv5te-android-gcc --host=arm-linux
 make -j8 || die "jpeg-6b build failed."
 cd ..
+#CFLAGS+=" -I$PWD/libjpeg-turbo-1.3.1/"
 
 if [[ ! -d tiff-4.0.3 ]]; then
   wget ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.3.tar.gz
   tar xvfz tiff*.gz
 fi
 cd tiff-4.0.3
-./configure --enable-static --host=arm-linux
+./configure --enable-static --host=arm-linux \
+            --with-jpeg-include-dir=$PWD/../libjpeg-turbo-1.3.1 \
+            --with-jpeg-lib-dir=$PWD/../libjpeg-turbo-1.3.1/.libs
 make -j8 || die "tiff build failed."
 cd ..
 
@@ -102,16 +117,16 @@ cd libpng-1.6.12
 make -j8 || die "libpng build failed."
 cd ..
 
-if [[ ! -d zlib-1.2.8 ]]; then
-  wget http://zlib.net/zlib-1.2.8.tar.gz
-  tar xvfz zlib*.gz
-fi
-cd zlib-1.2.8
-sed -i -e 's/AR=ar/AR=arm-linux-androideabi-ar/' Makefile.in
-patch configure ../build-modifications/zlib-configure.diff
-./configure --static
-make -j8 || die "zlib build failed."
-cd ..
+#if [[ ! -d zlib-1.2.8 ]]; then
+#  wget http://zlib.net/zlib-1.2.8.tar.gz
+#  tar xvfz zlib*.gz
+#fi
+#cd zlib-1.2.8
+#sed -i -e 's/AR=ar/AR=arm-linux-androideabi-ar/' Makefile.in
+#patch_f configure ../build-modifications/zlib-configure.diff
+#./configure --static
+#make -j8 || die "zlib build failed."
+#cd ..
 
 if [[ ! -d diamond-core-filters ]]; then
   git clone https://github.com/cmusatyalab/diamond-core-filters.git
