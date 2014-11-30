@@ -38,18 +38,30 @@ TODO: Run `add-res-to-raw.sh`.
 TODO
 
 # Licensing
-TODO - Licenses of dependencies.
+The Diamond Android source is licensed under the
+[Eclipse Public License v1.0][eplv1].
+The following libraries have been modified as noted and are
+included in the statically linked filter binary artifacts
+of this repository.
 
-TODO:
-We also used the following C implementations of functions we
-couldn't otherwise resolve.
+Project | Source Modified | License
+---|---
+[cmusatyalab/diamond-core-filters](https://github.com/cmusatyalab/diamond-core-filters) | Yes | [Eclipse Public License v1.0][eplv1]
+[cmusatyalab/opendiamond](https://github.com/cmusatyalab/opendiamond) | Yes | [Eclipse Public License v1.0][eplv1]
+[ivanra/getline](https://github.com/ivanra/getline) | | Public Domain
+[libarchive](http://www.libarchive.org/) | Yes | [BSD 2-Clause][bsd-2]
+[libjpeg-turbo](http://libjpeg-turbo.virtualgl.org/) | | [libjpeg-turbo License][lj-l]
+[libpng](http://www.libpng.org/pub/png/libpng.html) | | [libpng License](http://www.libpng.org/pub/png/src/libpng-LICENSE.txt)
+[libtiff](http://www.remotesensing.org/libtiff/) | | [MIT-like](http://www.remotesensing.org/libtiff/misc.html)
+[memstream-0.1](http://piumarta.com/software/memstream) | | [MIT][mit]
+[NimbusKit/memorymapping](https://raw.githubusercontent.com/NimbusKit/memorymapping/master/src/fmemopen.h) | | [Apache 2.0][a2]
+[OpenCV](http://opencv.org/) | | [OpenCV License](http://opencv.org/license.html)
 
-+ https://github.com/ivanra/getline
-
-https://raw.githubusercontent.com/NimbusKit/memorymapping/master/src/fmemopen.h
-http://www.opensource.apple.com/source/cvs/cvs-19/cvs/lib/getline.c?txt
-http://piumarta.com/software/memstream/memstream-0.1/memstream.c
-
+[a2]: http://www.apache.org/licenses/LICENSE-2.0.html
+[eplv1]: https://www.eclipse.org/legal/epl-v10.html
+[mit]: http://opensource.org/licenses/MIT
+[bsd-2]: http://opensource.org/licenses/bsd-license.php
+[lj-l]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README-turbo.txt
 
 [case-for-cloudlets]: http://elijah.cs.cmu.edu/DOCS/satya-ieeepvc-cloudlets-2009.pdf
 [diamond]: http://diamond.cs.cmu.edu/
