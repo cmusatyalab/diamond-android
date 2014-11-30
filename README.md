@@ -79,7 +79,7 @@ Project | Source Modified | License
 [mit]: http://opensource.org/licenses/MIT
 [bsd-2]: http://opensource.org/licenses/bsd-license.php
 [ijg]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README
-[lgpl]: https://www.gnu.org/licenses/lgpl.html
+[lgpl3]: https://www.gnu.org/licenses/lgpl.html
 [lj-l]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README-turbo.txt
 [lj-simd]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/simd/jsimdext.inc
 
