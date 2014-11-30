@@ -50,7 +50,7 @@ Project | Source Modified | License
 [cmusatyalab/opendiamond](https://github.com/cmusatyalab/opendiamond) | Yes | [Eclipse Public License v1.0][eplv1]
 [ivanra/getline](https://github.com/ivanra/getline) | | Public Domain
 [libarchive](http://www.libarchive.org/) | Yes | [BSD 2-Clause][bsd-2]
-[libjpeg-turbo](http://libjpeg-turbo.virtualgl.org/) | | [libjpeg-turbo License][lj-l]
+[libjpeg-turbo](http://libjpeg-turbo.virtualgl.org/) | | [libjpeg-turbo License][lj-l], [IJG][ijg], and [libjpeg/SIMD][lj-simd]
 [libpng](http://www.libpng.org/pub/png/libpng.html) | | [libpng License](http://www.libpng.org/pub/png/src/libpng-LICENSE.txt)
 [libtiff](http://www.remotesensing.org/libtiff/) | | [MIT-like](http://www.remotesensing.org/libtiff/misc.html)
 [memstream-0.1](http://piumarta.com/software/memstream) | | [MIT][mit]
@@ -61,7 +61,9 @@ Project | Source Modified | License
 [eplv1]: https://www.eclipse.org/legal/epl-v10.html
 [mit]: http://opensource.org/licenses/MIT
 [bsd-2]: http://opensource.org/licenses/bsd-license.php
+[ijg]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README
 [lj-l]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README-turbo.txt
+[li-simd]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/simd/jsimdext.inc
 
 [case-for-cloudlets]: http://elijah.cs.cmu.edu/DOCS/satya-ieeepvc-cloudlets-2009.pdf
 [diamond]: http://diamond.cs.cmu.edu/
