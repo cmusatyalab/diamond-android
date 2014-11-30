@@ -45,7 +45,7 @@ included in the statically linked filter binary artifacts
 of this repository.
 
 Project | Source Modified | License
----|---
+---|---|---
 [cmusatyalab/diamond-core-filters](https://github.com/cmusatyalab/diamond-core-filters) | Yes | [Eclipse Public License v1.0][eplv1]
 [cmusatyalab/opendiamond](https://github.com/cmusatyalab/opendiamond) | Yes | [Eclipse Public License v1.0][eplv1]
 [ivanra/getline](https://github.com/ivanra/getline) | | Public Domain
