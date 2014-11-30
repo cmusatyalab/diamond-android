@@ -1,0 +1,6 @@
+before_install:
+  - date
+script:
+  - echo script
+after_script:
+  - date
