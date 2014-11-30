@@ -117,17 +117,6 @@ cd libpng-1.6.12
 make -j8 || die "libpng build failed."
 cd ..
 
-#if [[ ! -d zlib-1.2.8 ]]; then
-#  wget http://zlib.net/zlib-1.2.8.tar.gz
-#  tar xvfz zlib*.gz
-#fi
-#cd zlib-1.2.8
-#sed -i -e 's/AR=ar/AR=arm-linux-androideabi-ar/' Makefile.in
-#patch_f configure ../build-modifications/zlib-configure.diff
-#./configure --static
-#make -j8 || die "zlib build failed."
-#cd ..
-
 if [[ ! -d diamond-core-filters ]]; then
   git clone https://github.com/cmusatyalab/diamond-core-filters.git
 fi
