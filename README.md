@@ -43,6 +43,22 @@ The Diamond Android source is licensed under the
 The following libraries have been modified as noted and are
 included in the statically linked filter binary artifacts
 of this repository.
+These portions are copyright their respective authors with
+the licenses listed.
+<!--
+From http://www.libjpeg-turbo.org/About/License:
+4. If you are distributing only libjpeg-turbo binaries without the source, or
+   if you are distributing an application that statically links with
+    libjpeg-turbo, then your product documentation must include a message
+    stating that "this software is based in part on the work of the Independent
+    JPEG Group".
+-->
+This software is based in part on the work of the Independent JPEG Group.
+<!-- From http://opencv.org/license.html -->
+By downloading, copying, installing or using the software you agree to the
+[OpenCV license](http://opencv.org/license.html).
+If you do not agree to this license, do not download, install, copy
+or use the software.
 
 Project | Source Modified | License
 ---|---|---
@@ -63,7 +79,7 @@ Project | Source Modified | License
 [bsd-2]: http://opensource.org/licenses/bsd-license.php
 [ijg]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README
 [lj-l]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README-turbo.txt
-[li-simd]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/simd/jsimdext.inc
+[lj-simd]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/simd/jsimdext.inc
 
 [case-for-cloudlets]: http://elijah.cs.cmu.edu/DOCS/satya-ieeepvc-cloudlets-2009.pdf
 [diamond]: http://diamond.cs.cmu.edu/
