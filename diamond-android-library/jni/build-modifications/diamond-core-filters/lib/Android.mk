@@ -4,7 +4,7 @@ CV := ../../OpenCV-2.4.9-android-sdk
 GLIB := ../../glib
 LJPEG := ../../libjpeg-turbo-1.3.1
 LTIFF := ../../tiff-4.0.3
-LPNG := ../../libpng-1.6.12
+LPNG := ../../libpng-1.6.15
 LARCHIVE := ../../libarchive-3.1.2
 
 include $(CLEAR_VARS)

@@ -108,11 +108,11 @@ cd tiff-4.0.3
 make -j8 || die "tiff build failed."
 cd ..
 
-if [[ ! -d libpng-1.6.12 ]]; then
-  wget http://prdownloads.sourceforge.net/libpng/libpng-1.6.12.tar.gz
+if [[ ! -d libpng-1.6.15 ]]; then
+  wget http://prdownloads.sourceforge.net/libpng/libpng-1.6.15.tar.gz
   tar xvfz libpng*.gz
 fi
-cd libpng-1.6.12
+cd libpng-1.6.15
 ./configure --enable-static --host=arm-linux
 make -j8 || die "libpng build failed."
 cd ..

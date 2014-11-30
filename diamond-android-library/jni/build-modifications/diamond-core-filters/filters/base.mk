@@ -5,7 +5,7 @@ GLIB := $(ROOT)/glib
 LARCHIVE := $(ROOT)/libarchive-3.1.2
 LJPEG := $(ROOT)/libjpeg-turbo-1.3.1
 LTIFF := $(ROOT)/tiff-4.0.3
-LPNG := $(ROOT)/libpng-1.6.12
+LPNG := $(ROOT)/libpng-1.6.15
 
 LOCAL_LDLIBS := \
 	$(OPENDIAMOND)/libfilter/obj/local/armeabi/libfilter.a \
