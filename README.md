@@ -64,6 +64,7 @@ Project | Source Modified | License
 ---|---|---
 [cmusatyalab/diamond-core-filters](https://github.com/cmusatyalab/diamond-core-filters) | Yes | [Eclipse Public License v1.0][eplv1]
 [cmusatyalab/opendiamond](https://github.com/cmusatyalab/opendiamond) | Yes | [Eclipse Public License v1.0][eplv1]
+[glib](https://developer.gnome.org/glib/) | [LGPL][lgpl3]
 [ivanra/getline](https://github.com/ivanra/getline) | | Public Domain
 [libarchive](http://www.libarchive.org/) | Yes | [BSD 2-Clause][bsd-2]
 [libjpeg-turbo](http://libjpeg-turbo.virtualgl.org/) | | [libjpeg-turbo License][lj-l], [IJG][ijg], and [libjpeg/SIMD][lj-simd]
@@ -78,6 +79,7 @@ Project | Source Modified | License
 [mit]: http://opensource.org/licenses/MIT
 [bsd-2]: http://opensource.org/licenses/bsd-license.php
 [ijg]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README
+[lgpl]: https://www.gnu.org/licenses/lgpl.html
 [lj-l]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/README-turbo.txt
 [lj-simd]: http://svn.code.sf.net/p/libjpeg-turbo/code/trunk/simd/jsimdext.inc
 
