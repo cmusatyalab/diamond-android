@@ -1,4 +1,4 @@
-TODO - Create diagram.
+![](https://github.com/cmusatyalab/diamond-android/raw/master/images/overview.png)
 
 Mobile devices have powerful processors and streaming and processing
 video in real time is becoming a reality by leveraging
