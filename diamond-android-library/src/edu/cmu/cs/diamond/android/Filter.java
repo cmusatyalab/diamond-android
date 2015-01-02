@@ -38,8 +38,20 @@ public class Filter {
     private OutputStream os;
     private File tempDir;
 
-    public Filter(FilterEnum type, Context context, String name, String[] args, byte[] blob) throws IOException {
-        File f = context.getFileStreamPath(context.getResources().getResourceEntryName(type.id));
+    public Filter(int resourceId, Context context, String name, String[] args, byte[] blob) throws IOException {
+        Resources r = context.getResources();
+        String resourceName = r.getResourceEntryName(resourceId);
+        File f = context.getFileStreamPath(resourceName);
+
+        if (!f.exists()) {
+            InputStream ins = r.openRawResource(resourceId);
+            byte[] buf = IOUtils.toByteArray(ins);
+            FileOutputStream fos = context.openFileOutput(resourceName, Context.MODE_PRIVATE);
+            IOUtils.write(buf, fos);
+            context.getFileStreamPath(resourceName).setExecutable(true);
+            fos.close();
+        }
+
         ProcessBuilder pb = new ProcessBuilder(f.getAbsolutePath());
         Map<String,String> env = pb.environment();
         tempDir = File.createTempFile("filter", null, context.getCacheDir());
@@ -72,17 +84,17 @@ public class Filter {
         }
     }
 
-    public static void loadFilters(Context context) throws IOException {
-        Resources r = context.getResources();
-        for (FilterEnum f : FilterEnum.values()) {
-            InputStream ins = r.openRawResource(f.id);
-            String name = r.getResourceEntryName(f.id);
-            byte[] buf = IOUtils.toByteArray(ins);
-            FileOutputStream fos = context.openFileOutput(name, Context.MODE_PRIVATE);
-            IOUtils.write(buf, fos);
-            context.getFileStreamPath(name).setExecutable(true);
-        }
-    }
+//    public static void loadFilters(Context context) throws IOException {
+//        Resources r = context.getResources();
+//        for (FilterEnum f : FilterEnum.values()) {
+//            InputStream ins = r.openRawResource(f.id);
+//            String name = r.getResourceEntryName(f.id);
+//            byte[] buf = IOUtils.toByteArray(ins);
+//            FileOutputStream fos = context.openFileOutput(name, Context.MODE_PRIVATE);
+//            IOUtils.write(buf, fos);
+//            context.getFileStreamPath(name).setExecutable(true);
+//        }
+//    }
     
     public double process(Map<String, byte[]> m) throws IOException, FilterException {
         while (true) {

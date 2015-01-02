@@ -9,11 +9,8 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 
 import edu.cmu.cs.diamond.android.Filter;
-import edu.cmu.cs.diamond.android.FilterEnum;
 import edu.cmu.cs.diamond.android.FilterException;
-import edu.cmu.cs.diamond.android.TagEnum;
 import edu.cmu.cs.diamond.android.examples.facialrecognition.R;
-import edu.cmu.cs.diamond.android.token.*;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
@@ -54,9 +51,9 @@ public class MainActivity extends Activity {
             InputStream ocvXmlIS = context.getResources().openRawResource(R.raw.haarcascade_frontalface);
             Filter rgbFilter, faceFilter;
             try {
-                rgbFilter = new Filter(FilterEnum.RGBIMG, context, "RGB", null, null);
+                rgbFilter = new Filter(R.raw.rgbimg, context, "RGB", null, null);
                 byte[] ocvXml = IOUtils.toByteArray(ocvXmlIS);
-                faceFilter = new Filter(FilterEnum.OCV_FACE, context, "OCVFace",
+                faceFilter = new Filter(R.raw.ocv_face, context, "OCVFace",
                     faceFilterArgs, ocvXml);
             } catch (IOException e1) {
                 Log.e(TAG, "Unable to create filter subprocess.");
@@ -122,13 +119,6 @@ public class MainActivity extends Activity {
         mCamera = (CameraPreview) findViewById(R.id.cameraPreview);
 //        mCamera.changeConfiguration(null, null, ImageFormat.NV21);
         mClassificationText = (TextView) findViewById(R.id.classificationText);
-
-        try {
-            Filter.loadFilters(context);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
         mCamera.setPreviewCallback(previewCallback);
         processingThread.start();
