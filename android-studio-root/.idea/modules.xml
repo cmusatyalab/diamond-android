@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/diamond-android-new.iml" filepath="$PROJECT_DIR$/diamond-android-new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/diamondandroidlibrary/diamondandroidlibrary.iml" filepath="$PROJECT_DIR$/diamondandroidlibrary/diamondandroidlibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/facerecognition/facerecognition.iml" filepath="$PROJECT_DIR$/facerecognition/facerecognition.iml" />
+    </modules>
+  </component>
+</project>
+
