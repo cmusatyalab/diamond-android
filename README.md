@@ -88,15 +88,31 @@ private boolean isFace(byte[] jpegImage, Filter rgbFilter, Filter faceFilter) th
 ```
 
 # Obtaining ARM Filters
-TODO
+Filters should be located in the `res/raw` directory of your
+Android application and can be obtained as binaries
+from [here](TODO) or built from source with the NDK.
 
-## Downloading Binaries
-TODO - Upload
-
-## Building filters with the Android NDK
-The current
-
-TODO: Run `add-res-to-raw.sh`.
+## Building filters from source with the Android NDK
+The [build.sh](https://github.com/cmusatyalab/diamond-android/blob/master/diamond-android-library/jni/build.sh)
+script in the
+[diamond-android-library/jni](https://github.com/cmusatyalab/diamond-android/tree/master/diamond-android-library/jni)
+directory will automatically download libraries from source,
+apply [source modifications](https://github.com/cmusatyalab/diamond-android/tree/master/diamond-android-library/jni/build-modifications),
+and build static filter executables.
+The only prerequisite to running `build.sh` is to install the
+[Android NDK](https://developer.android.com/tools/sdk/ndk/index.html)
+and set the `ANDROID_NDK` environment variable to the installation path.
+`build.sh` will create a
+[standalone toolchain](http://www.kandroid.org/ndk/docs/STANDALONE-TOOLCHAIN.html)
+for cross compiling the ARM applications.
+The prebuilt filters use the Android NDK version `r9d` on OSX,
+and [#31](https://github.com/cmusatyalab/diamond-android/issues/31)
+describes a possible bug if the filters are compiled from Linux.
+Once the filters are built, the
+[add-res-to-raw.sh](https://github.com/cmusatyalab/diamond-android/blob/master/diamond-android-library/add-filters-to-res.sh)
+script will extract the binaries into `res/raw` of the
+library application, which should be moved into `res/raw`
+of applications using Diamond Android.
 
 # Contributing
 TODO
