@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "cs.cmu.edu.facerecognition"
+        applicationId "edu.cmu.cs.diamond.android.examples.facialrecognition"
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
@@ -22,6 +22,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'org.apache.commons:commons-io:1.3.2'
     compile project(':diamondandroidlibrary')
 }
