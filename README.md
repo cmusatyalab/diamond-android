@@ -90,14 +90,36 @@ private boolean isFace(byte[] jpegImage, Filter rgbFilter, Filter faceFilter) th
 # Obtaining ARM Filters
 Filters should be located in the `res/raw` directory of your
 Android application and can be obtained as binaries
-from [here](TODO) or built from source with the NDK.
+in `arm-filters.tgz` from
+[the releases](https://github.com/cmusatyalab/diamond-android/releases/).
+The following portion describes how to build the filters
+from source with the NDK and integrate with gradle in Android Studio.
 
 ## Building filters from source with the Android NDK
-The [build.sh](https://github.com/cmusatyalab/diamond-android/blob/master/diamond-android-library/jni/build.sh)
+This section was ported from a pre-Android Studio into gradle
+and does not use all of gradle and Android Studio's dependency
+management solutions.
+
+[build.gradle](https://github.com/cmusatyalab/diamond-android/blob/master/android-studio-root/facerecognition/build.gradle)
+in the facerecognition application will invoke the NDK if
+an arm filter is not present with the following task and dependency.
+
+```Gradle
+task buildJni(type: Exec) {
+  commandLine 'sh', './jni/build.sh'
+  commandLine 'sh', './add-filters-to-res.sh'
+}
+
+compile files("src/main/res/raw/dog_texture") {
+  builtBy 'buildJni'
+}
+```
+
+The [build.sh](https://github.com/cmusatyalab/diamond-android/blob/master/android-studio-root/facerecognition/jni/build.sh)
 script in the
-[diamond-android-library/jni](https://github.com/cmusatyalab/diamond-android/tree/master/diamond-android-library/jni)
+[diamond-android-library/jni](https://github.com/cmusatyalab/diamond-android/tree/master/android-studio-root/facerecognition/jni)
 directory will automatically download libraries from source,
-apply [source modifications](https://github.com/cmusatyalab/diamond-android/tree/master/diamond-android-library/jni/build-modifications),
+apply [source modifications](https://github.com/cmusatyalab/diamond-android/tree/master/android-studio-root/facerecognition/jni/build-modifications),
 and build static filter executables.
 The only prerequisite to running `build.sh` is to install the
 [Android NDK](https://developer.android.com/tools/sdk/ndk/index.html)
@@ -109,7 +131,7 @@ The prebuilt filters use the Android NDK version `r9d` on OSX,
 and [#31](https://github.com/cmusatyalab/diamond-android/issues/31)
 describes a possible bug if the filters are compiled from Linux.
 Once the filters are built, the
-[add-res-to-raw.sh](https://github.com/cmusatyalab/diamond-android/blob/master/diamond-android-library/add-filters-to-res.sh)
+[add-res-to-raw.sh](https://github.com/cmusatyalab/diamond-android/blob/master/android-studio-root/facerecognition/add-filters-to-res.sh),
 script will extract the binaries into `res/raw` of the
 library application, which should be moved into `res/raw`
 of applications using Diamond Android.
