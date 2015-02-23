@@ -1,6 +1,6 @@
 ![](https://github.com/cmusatyalab/diamond-android/raw/master/images/overview.png)
 
-[Javadoc](TODO)
+[Javadoc][javadoc]
 
 Mobile devices have powerful processors and streaming and processing
 video in real time is becoming a reality by leveraging
@@ -10,8 +10,8 @@ Real-time video processing is becoming a reality,
 and filtering video frames can be helpful to identify objects in frames.
 This project provides an image and video frame filtering library for
 Android and Glass.
-For example, an augmented reality application can say "only send video frames with a
-brick wall like in these examples because I'm only interested in
+For example, an augmented reality application can say "only send video
+frames with a brick wall like in these examples because I'm only interested in
 overlaying images on top of brick walls."
 
 These filters are provided by the [Diamond][diamond] project,
@@ -23,11 +23,12 @@ for ARM and statically links their dependencies.
 # Face Detection Example
 ![](https://github.com/cmusatyalab/diamond-android/raw/master/images/face-detection-example.png)
 
-[examples/face-detection](https://github.com/cmusatyalab/diamond-android/tree/master/examples/face-detection)
+[examples/face-detection](https://github.com/cmusatyalab/diamond-android/tree/master/android-studio-root/facerecognition)
 is an example Android application to illustrate the usage of a
 Diamond filter with an Android application filtering video
 in real time for faces.
-The APK of this application is available from [here](TODO).
+The APK of this application is available as
+`facerecognition-release-unsigned.apk` from [the releases][releases].
 
 The Diamond face detection filter is implemented in
 [filters/ocv_face](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/ocv_face)
@@ -41,7 +42,7 @@ which uses the JNI to interact with the native library.
 Applications interact with the filter binaries through `Filter` objects.
 The face detection example uses the `rgbimg` filter to convert images
 into RGB format and the `ocv_face` filter to detect faces.
-See the [Filter Javadoc](TODO) for more information about creating filters.
+See the [Filter Javadoc][javadoc] for more information about creating filters.
 
 ```Java
 String[] faceFilterArgs = {"1.2", "24", "24", "1", "2"};
@@ -66,7 +67,7 @@ Applications communicate with filters through the `process` function,
 which uses a map for communication and returns a double.
 The face recognition filter returns 1.0 if a face is detected
 ad 0.0 otherwise.
-Further details are described in the [Filter Javadoc](TODO).
+Further details are described in the [Filter Javadoc][javadoc].
 
 ```Java
 private boolean isFace(byte[] jpegImage, Filter rgbFilter, Filter faceFilter) throws IOException, FilterException {
@@ -87,11 +88,53 @@ private boolean isFace(byte[] jpegImage, Filter rgbFilter, Filter faceFilter) th
 }
 ```
 
+# Filters provided
+This repository compiles the following filters from
+[cmusatyalab/diamond-core-filters][diamond-core-filters]
+for ARM.
+The arguments to the filters can be found in the
+[filter sources](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters).
+
+Filter | Description
+---|---
+[dog_texture](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/dog_texture) | [Wikipedia: Difference of Gaussians](https://en.wikipedia.org/wiki/Difference_of_Gaussians)
+[gabor_texture](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/gabor_texture) | [Wikipedia: Gabor filter](https://en.wikipedia.org/wiki/Gabor_filter)
+[img_diff](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/img_diff) | Pixel-wise image difference.
+[null](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/null) | Null filter (for testing)
+[ocv_face](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/ocv_face) | OpenCV face detection.
+[rgb_histogram](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/rgb_histogram) | [Wikipedia: Color histogram](https://en.wikipedia.org/wiki/Color_histogram)
+[rgbimg](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/rgbimg) | Tries to convert numerous image formats into RGB.
+[shingling](https://github.com/cmusatyalab/diamond-core-filters/tree/master/filters/shingling) | Fingerprint images based on sliding windows.
+
+# Filter performance
+The [performance](https://github.com/cmusatyalab/diamond-android/tree/master/android-studio-root/performance)
+application runs filter on a sample data set
+to estimate how long the filters will take to run in production.
+The runtime may vary depending on the device, CPU load,
+and the number of sample images are used.
+
+## Configuring
+### Image set on the device
+Extract and move `public-domain-landscapes.tgz` from [the releases][releases]
+into `/sdcard/` of the device.
+
+```
+tar xvfz public-domain-landscapes.tgz
+adb push public-domain-landscapes /sdcard/public-domain-landscapes
+```
+
+### Filter examples in the application resources
+Move and rename `public-domain-landscape-cloud-filters.zip` (as a zip archive)
+from [the releases][releases] to `res/raw/filter_zip` of
+the `performance` application.
+
+## Results
+[TODO, #33](https://github.com/cmusatyalab/diamond-android/issues/33)
+
 # Obtaining ARM Filters
 Filters should be located in the `res/raw` directory of your
 Android application and can be obtained as binaries
-in `arm-filters.tgz` from
-[the releases](https://github.com/cmusatyalab/diamond-android/releases/).
+in `arm-filters.tgz` from [the releases][releases].
 The following portion describes how to build the filters
 from source with the NDK and integrate with gradle in Android Studio.
 
@@ -136,12 +179,9 @@ script will extract the binaries into `res/raw` of the
 library application, which should be moved into `res/raw`
 of applications using Diamond Android.
 
-# Contributing
-TODO
-
 # Licensing
-The Diamond Android source is licensed under the
-[Eclipse Public License v1.0][eplv1].
+The Diamond Android source is copyright Carnegie Mellon University
+and licensed under the [Eclipse Public License v1.0][eplv1].
 The following libraries have been modified as noted and are
 included in the statically linked filter binary artifacts
 of this repository.
@@ -193,3 +233,6 @@ Project | Source Modified | License
 [glib-android]: https://github.com/ieei/glib/
 [diamond-core-filters]: https://github.com/cmusatyalab/diamond-core-filters
 [ndk-r9]: http://dl.google.com/android/ndk/android-ndk-r9-linux-x86.tar.bz2
+
+[releases]: https://github.com/cmusatyalab/diamond-android/releases/
+[javadoc]: https://github.com/cmusatyalab/diamond-android/issues/20
