@@ -1,1 +1,1 @@
-include ':diamondandroidlibrary', ':facerecognition'
+include ':diamondandroidlibrary', ':facerecognition', ':performance'

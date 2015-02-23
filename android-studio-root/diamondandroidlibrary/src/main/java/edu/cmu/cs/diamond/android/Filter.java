@@ -34,11 +34,13 @@ public class Filter {
     private final String TAG = this.getClass().getSimpleName();
 
     public Process proc;
+    public String name;
     private InputStream is;
     private OutputStream os;
     private File tempDir;
 
     public Filter(int resourceId, Context context, String name, String[] args, byte[] blob) throws IOException {
+        this.name = name;
         Resources r = context.getResources();
         String resourceName = r.getResourceEntryName(resourceId);
         File f = context.getFileStreamPath(resourceName);
