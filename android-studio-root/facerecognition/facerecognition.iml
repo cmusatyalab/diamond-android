@@ -87,6 +87,7 @@
     <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="dog_texture" level="project" />
     <orderEntry type="library" exported="" name="org.apache.commons.io-2.4" level="project" />
     <orderEntry type="module" module-name="diamondandroidlibrary" exported="" />
   </component>

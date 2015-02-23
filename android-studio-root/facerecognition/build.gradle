@@ -19,8 +19,16 @@ android {
     }
 }
 
+task buildJni(type: Exec) {
+    commandLine 'sh', './jni/build.sh'
+    commandLine 'sh', './add-filters-to-res.sh'
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile project(':diamondandroidlibrary')
+    compile files("src/main/res/raw/dog_texture") {
+        builtBy 'buildJni'
+    }
 }
