@@ -190,6 +190,9 @@ public class Filter {
         char c = 0;
         do {
             c = (char) is.read();
+            if (c == 65535) {
+                throw new RuntimeException("Character is 65535 in readLine");
+            }
             if (c != '\n' && c != '\0') buf.append(c);
         } while (c != '\n' && c != '\0');
         return buf.toString();
