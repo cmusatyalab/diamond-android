@@ -1,3 +1,6 @@
+**Warning:** This library is pre-alpha, not under active development,
+and not ready for production.
+
 ![](https://github.com/cmusatyalab/diamond-android/raw/master/images/overview.png)
 
 [Javadoc][javadoc]
