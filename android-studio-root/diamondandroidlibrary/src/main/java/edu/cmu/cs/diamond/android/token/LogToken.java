@@ -1,5 +1,5 @@
 /*
- *  Diamond Android - Diamond filters for the Android platform
+ *  Diamond Android - Android library for running Diamond filters
  *
  *  Copyright (c) 2013-2014 Carnegie Mellon University
  *  All Rights Reserved.
