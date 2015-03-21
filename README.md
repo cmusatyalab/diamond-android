@@ -1,5 +1,9 @@
 **Warning: This library is pre-alpha, not under active development,
-and not ready for production.**
+and not ready for production.
+Please message [Brandon Amos](http://github.com/bamos)
+(email: `bamos@cs.cmu.edu`, twitter: [@brandondamos](https://twitter.com/brandondamos))
+if you're interested in using a complete version of library.
+Thanks!**
 
 ---
 
