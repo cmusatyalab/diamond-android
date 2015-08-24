@@ -177,7 +177,7 @@ The only prerequisite to running `build.sh` is to install the
 [Android NDK](https://developer.android.com/tools/sdk/ndk/index.html)
 and set the `ANDROID_NDK` environment variable to the installation path.
 `build.sh` will create a
-[standalone toolchain](http://www.kandroid.org/ndk/docs/STANDALONE-TOOLCHAIN.html)
+[standalone toolchain](https://developer.android.com/ndk/guides/standalone_toolchain.html)
 for cross compiling the ARM applications.
 The prebuilt filters use the Android NDK version `r9d` on OSX,
 and [#31](https://github.com/cmusatyalab/diamond-android/issues/31)
